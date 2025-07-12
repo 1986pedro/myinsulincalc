@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Insulina</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #reset, #clearSaved {
+            background-color: #dc3545;
+        }
+        #reset:hover, #clearSaved:hover {
+            background-color: #c82333;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Calculadora de Insulina</h2>
+        <form id="insulinForm">
+            <label for="glucose">Glicemia Atual (mg/dL):</label>
+            <input type="number" id="glucose" required>
+
+            <label for="target">Glicemia Alvo (mg/dL):</label>
+            <input type="number" id="target" required>
+
+            <label for="carb">Hidratos de Carbono Ingeridos (g):</label>
+            <input type="number" id="carb" required>
+
+            <label for="isf">Fator de Sensibilidade à Insulina (mg/dL por unidade):</label>
+            <input type="number" id="isf" required>
+
+            <label for="icr">Relação Insulina/HCarbono (g por unidade):</label>
+            <input type="number" id="icr" required>
+
+            <button type="button" onclick="calculateInsulin()">Calcular</button>
+            <button type="button" id="reset" onclick="resetForm()">Limpar</button>
+            <button type="button" id="clearSaved" onclick="clearSavedValues()">Limpar Valores Salvos</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Carregar valores salvos do localStorage ao iniciar
+        window.onload = function() {
+            const savedTarget = localStorage.getItem('targetGlucose');
+            const savedIsf = localStorage.getItem('insulinSensitivityFactor');
+            const savedIcr = localStorage.getItem('insulinCarbRatio');
+            if (savedTarget) document.getElementById('target').value = savedTarget;
+            if (savedIsf) document.getElementById('isf').value = savedIsf;
+            if (savedIcr) document.getElementById('icr').value = savedIcr;
+        };
+
+        function calculateInsulin() {
+            const glucose = parseFloat(document.getElementById('glucose').value);
+            const target = parseFloat(document.getElementById('target').value);
+            const carb = parseFloat(document.getElementById('carb').value);
+            const isf = parseFloat(document.getElementById('isf').value);
+            const icr = parseFloat(document.getElementById('icr').value);
+
+            if (isNaN(glucose) || isNaN(target) || isNaN(carb) || isNaN(isf) || isNaN(icr)) {
+                document.getElementById('result').innerHTML = 'Por favor, preencha todos os campos com valores válidos.';
+                return;
+            }
+
+            // Salvar Target, ISF e ICR no localStorage
+            localStorage.setItem('targetGlucose', target);
+            localStorage.setItem('insulinSensitivityFactor', isf);
+            localStorage.setItem('insulinCarbRatio', icr);
+
+            // Cálculo da dose de insulina
+            const correctionDose = (glucose - target) / isf; // Dose para correção
+            const carbDose = carb / icr; // Dose para carboidratos
+            const totalDose = Math.max(0, (correctionDose + carbDose).toFixed(2)); // Evita doses negativas
+
+            document.getElementById('result').innerHTML = `
+                Dose de correção: ${correctionDose.toFixed(2)} unidades<br>
+                Dose de carboidratos: ${carbDose.toFixed(2)} unidades<br>
+                Dose total necessária: ${totalDose} unidades
+            `;
+        }
+
+        function resetForm() {
+            document.getElementById('insulinForm').reset();
+            // Restaurar Target, ISF e ICR salvos, se existirem
+            const savedTarget = localStorage.getItem('targetGlucose');
+            const savedIsf = localStorage.getItem('insulinSensitivityFactor');
+            const savedIcr = localStorage.getItem('insulinCarbRatio');
+            if (savedTarget) document.getElementById('target').value = savedTarget;
+            if (savedIsf) document.getElementById('isf').value = savedIsf;
+            if (savedIcr) document.getElementById('icr').value = savedIcr;
+            document.getElementById('result').innerHTML = '';
+        }
+
+        function clearSavedValues() {
+            localStorage.removeItem('targetGlucose');
+            localStorage.removeItem('insulinSensitivityFactor');
+            localStorage.removeItem('insulinCarbRatio');
+            document.getElementById('target').value = '';
+            document.getElementById('isf').value = '';
+            document.getElementById('icr').value = '';
+            document.getElementById('result').innerHTML = 'Valores salvos foram limpos.';
+        }
+    </script>
+</body>
+</html>
