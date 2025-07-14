@@ -112,42 +112,45 @@
             <button type="button" onclick="calculateInsulin()">Calcular</button>
             <button type="button" id="reset" onclick="resetForm()">Limpar</button>
             <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
-            <button type="button" id="toggleTheme" onclick="toggleTheme()">Ativar Modo Escuro</button>
+            <button type="button" id="toggleTheme">Ativar Modo Escuro</button>
         </form>
         <div id="result" aria-live="polite"></div>
         <p class="disclaimer"><strong>Aviso:</strong> Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.</p>
     </div>
 
     <script>
+        // Função para aplicar o tema
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            const toggleButton = document.getElementById('toggleTheme');
+            toggleButton.textContent = theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro';
+            localStorage.setItem('theme', theme);
+            console.log(`Tema aplicado: ${theme}`);
+        }
+
         // Carregar tema e valores guardados do localStorage ao iniciar
         window.onload = function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.body.setAttribute('data-theme', savedTheme);
-                updateThemeButtonText(savedTheme);
-            }
+            // Carregar tema
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
 
+            // Carregar valores salvos
             const savedTarget = localStorage.getItem('targetGlucose');
             const savedIsf = localStorage.getItem('insulinSensitivityFactor');
             const savedIcr = localStorage.getItem('insulinCarbRatio');
             if (savedTarget) document.getElementById('target').value = savedTarget;
             if (savedIsf) document.getElementById('isf').value = savedIsf;
             if (savedIcr) document.getElementById('icr').value = savedIcr;
+
+            // Adicionar event listener para o botão de tema
+            document.getElementById('toggleTheme').addEventListener('click', toggleTheme);
         };
 
         // Função para alternar o tema
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme') || 'light';
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeButtonText(newTheme);
-        }
-
-        // Atualizar texto do botão de tema
-        function updateThemeButtonText(theme) {
-            const toggleButton = document.getElementById('toggleTheme');
-            toggleButton.textContent = theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro';
+            applyTheme(newTheme);
         }
 
         // Prevenir submissão padrão do formulário
