@@ -53,7 +53,7 @@
             background-color: #c82333;
         }
         #result {
-            margin-top: 20px;
+            margin: 10px 0;
             font-weight: bold;
         }
         .disclaimer {
@@ -84,6 +84,8 @@
                 <button type="button" id="reset" onclick="resetForm()">Limpar</button>
             </div>
 
+            <div id="result" aria-live="polite"></div>
+
             <label for="target">Glicemia Alvo (mg/dL):</label>
             <input type="number" id="target" min="0" max="300" step="1" placeholder="Ex: 100" required>
 
@@ -95,7 +97,6 @@
 
             <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
         </form>
-        <div id="result" aria-live="polite"></div>
         <p class="disclaimer"><strong>Aviso:</strong> Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.</p>
     </div>
 
@@ -150,11 +151,27 @@
             const totalDose = correctionDose + carbDose;
             const totalDoseRounded = Math.round(totalDose * 2) / 2; // Arredonda para o meio mais próximo
 
+            // Explicação do cálculo
+            let explanation = '<br><strong>Como foi calculado:</strong><br>';
+            if (glucose > target) {
+                explanation += `Dose de correção = (Glicemia Atual - Glicemia Alvo) / FSI = (${glucose} - ${target}) / ${isf} = ${correctionDose.toFixed(2)} unidades<br>`;
+            } else {
+                explanation += 'Dose de correção = 0 (Glicemia Atual não excede Glicemia Alvo)<br>';
+            }
+            if (carb > 0) {
+                explanation += `Dose de hidratos = Hidratos de Carbono / Rácio IC = ${carb} / ${icr} = ${carbDose.toFixed(2)} unidades<br>`;
+            } else {
+                explanation += 'Dose de hidratos = 0 (Nenhum hidrato de carbono inserido)<br>';
+            }
+            explanation += `Dose total = Dose de correção + Dose de hidratos = ${correctionDose.toFixed(2)} + ${carbDose.toFixed(2)} = ${totalDose.toFixed(2)} unidades<br>`;
+            explanation += `Dose total arredondada = Arredondar ${totalDose.toFixed(2)} para o meio mais próximo = ${totalDoseRounded.toFixed(2)} unidades`;
+
             document.getElementById('result').innerHTML = `
                 Dose de correção: ${correctionDose.toFixed(2)} unidades<br>
                 Dose de hidratos de carbono: ${carbDose.toFixed(2)} unidades<br>
                 <strong>Dose total necessária: ${totalDoseRounded.toFixed(2)} unidades</strong><br>
                 Valores de alvo, FSI e rácio guardados com sucesso.
+                ${explanation}
             `;
         }
 
