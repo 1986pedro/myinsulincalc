@@ -56,6 +56,17 @@
             margin: 10px 0;
             font-weight: bold;
         }
+        .total-dose-value {
+            color: #28a745; /* Verde para o número da dose total */
+        }
+        .total-dose-label {
+            font-size: 18px; /* Aumenta em 2px em relação ao padrão (16px) */
+        }
+        #save-message {
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #000;
+        }
         .disclaimer {
             margin-top: 20px;
             font-size: 0.9em;
@@ -95,6 +106,8 @@
             <label for="icr">Relação Insulina/Hidratos de Carbono (g por unidade):</label>
             <input type="number" id="icr" min="1" step="0.1" placeholder="Ex: 10" required>
 
+            <div id="save-message"></div>
+
             <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
         </form>
         <p class="disclaimer"><strong>Aviso:</strong> Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.</p>
@@ -109,6 +122,10 @@
             if (savedTarget) document.getElementById('target').value = savedTarget;
             if (savedIsf) document.getElementById('isf').value = savedIsf;
             if (savedIcr) document.getElementById('icr').value = savedIcr;
+            // Exibir mensagem de valores guardados se existirem
+            if (savedTarget || savedIsf || savedIcr) {
+                document.getElementById('save-message').innerHTML = 'Valores de alvo, FSI e rácio guardados com sucesso.';
+            }
         };
 
         // Prevenir submissão padrão do formulário
@@ -145,6 +162,9 @@
             localStorage.setItem('insulinSensitivityFactor', isf);
             localStorage.setItem('insulinCarbRatio', icr);
 
+            // Exibir mensagem de sucesso no #save-message
+            document.getElementById('save-message').innerHTML = 'Valores de alvo, FSI e rácio guardados com sucesso.';
+
             // Cálculo da dose de insulina
             let correctionDose = glucose > target ? (glucose - target) / isf : 0;
             const carbDose = carb > 0 ? carb / icr : 0;
@@ -167,10 +187,9 @@
             explanation += `Dose total arredondada = Arredondar ${totalDose.toFixed(2)} para o meio mais próximo = ${totalDoseRounded.toFixed(2)} unidades`;
 
             document.getElementById('result').innerHTML = `
+                <div class="total-dose-label">Dose total necessária: <span class="total-dose-value">${totalDoseRounded.toFixed(2)}</span> unidades</div><br>
                 Dose de correção: ${correctionDose.toFixed(2)} unidades<br>
                 Dose de hidratos de carbono: ${carbDose.toFixed(2)} unidades<br>
-                <strong>Dose total necessária: ${totalDoseRounded.toFixed(2)} unidades</strong><br>
-                Valores de alvo, FSI e rácio guardados com sucesso.
                 ${explanation}
             `;
         }
@@ -180,6 +199,7 @@
             document.getElementById('glucose').value = '';
             document.getElementById('carb').value = '';
             document.getElementById('result').innerHTML = '';
+            // Mantém a mensagem de valores guardados
         }
 
         function clearSavedValues() {
@@ -190,6 +210,7 @@
             document.getElementById('isf').value = '';
             document.getElementById('icr').value = '';
             document.getElementById('result').innerHTML = 'Valores guardados foram eliminados.';
+            document.getElementById('save-message').innerHTML = ''; // Limpa a mensagem de valores guardados
         }
     </script>
 </body>
