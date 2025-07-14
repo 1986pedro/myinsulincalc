@@ -28,6 +28,7 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
         button {
             padding: 10px 20px;
@@ -63,24 +64,24 @@
             <label for="target">Glicemia Alvo (mg/dL):</label>
             <input type="number" id="target" required>
 
-            <label for="carb">Hidratos de Carbono Ingeridos (g):</label>
+            <label for="carb">Hidratos de Carbono Consumidos (g):</label>
             <input type="number" id="carb" required>
 
             <label for="isf">Fator de Sensibilidade à Insulina (mg/dL por unidade):</label>
             <input type="number" id="isf" required>
 
-            <label for="icr">Relação Insulina/HCarbono (g por unidade):</label>
+            <label for="icr">Relação Insulina/Hidratos de Carbono (g por unidade):</label>
             <input type="number" id="icr" required>
 
             <button type="button" onclick="calculateInsulin()">Calcular</button>
             <button type="button" id="reset" onclick="resetForm()">Limpar</button>
-            <button type="button" id="clearSaved" onclick="clearSavedValues()">Limpar Valores Salvos</button>
+            <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
         </form>
         <div id="result"></div>
     </div>
 
     <script>
-        // Carregar valores salvos do localStorage ao iniciar
+        // Carregar valores guardados do localStorage ao iniciar
         window.onload = function() {
             const savedTarget = localStorage.getItem('targetGlucose');
             const savedIsf = localStorage.getItem('insulinSensitivityFactor');
@@ -102,32 +103,34 @@
                 return;
             }
 
-            // Salvar Target, ISF e ICR no localStorage
+            // Guardar Alvo, FSI e Rácio IC no localStorage
             localStorage.setItem('targetGlucose', target);
             localStorage.setItem('insulinSensitivityFactor', isf);
             localStorage.setItem('insulinCarbRatio', icr);
 
             // Cálculo da dose de insulina
-            const correctionDose = (glucose - target) / isf; // Dose para correção
-            const carbDose = carb / icr; // Dose para carboidratos
-            const totalDose = Math.max(0, (correctionDose + carbDose).toFixed(2)); // Evita doses negativas
+            let correctionDose = 0;
+            // A dose de correção só deve ser calculada se a glicemia estiver acima do alvo
+            if (glucose > target) {
+                correctionDose = (glucose - target) / isf;
+            }
+            
+            const carbDose = carb > 0 ? carb / icr : 0; // Dose para hidratos de carbono
+            const totalDose = correctionDose + carbDose;
 
             document.getElementById('result').innerHTML = `
                 Dose de correção: ${correctionDose.toFixed(2)} unidades<br>
-                Dose de carboidratos: ${carbDose.toFixed(2)} unidades<br>
-                Dose total necessária: ${totalDose} unidades
+                Dose de hidratos de carbono: ${carbDose.toFixed(2)} unidades<br>
+                <strong>Dose total necessária: ${totalDose.toFixed(2)} unidades</strong>
             `;
         }
 
         function resetForm() {
-            document.getElementById('insulinForm').reset();
-            // Restaurar Target, ISF e ICR salvos, se existirem
-            const savedTarget = localStorage.getItem('targetGlucose');
-            const savedIsf = localStorage.getItem('insulinSensitivityFactor');
-            const savedIcr = localStorage.getItem('insulinCarbRatio');
-            if (savedTarget) document.getElementById('target').value = savedTarget;
-            if (savedIsf) document.getElementById('isf').value = savedIsf;
-            if (savedIcr) document.getElementById('icr').value = savedIcr;
+            // Apaga apenas os campos que mudam a cada cálculo
+            document.getElementById('glucose').value = '';
+            document.getElementById('carb').value = '';
+
+            // Apaga o resultado anterior
             document.getElementById('result').innerHTML = '';
         }
 
@@ -138,7 +141,7 @@
             document.getElementById('target').value = '';
             document.getElementById('isf').value = '';
             document.getElementById('icr').value = '';
-            document.getElementById('result').innerHTML = 'Valores salvos foram limpos.';
+            document.getElementById('result').innerHTML = 'Valores guardados foram eliminados.';
         }
     </script>
 </body>
