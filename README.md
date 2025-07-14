@@ -1,4 +1,7 @@
-Calculadora de InsulinaUma aplicação web simples e acessível para calcular doses de insulina com base na glicemia atual, hidratos de carbono consumidos, glicemia alvo, fator de sensibilidade à insulina (FSI) e relação insulina/hidratos de carbono (Rácio IC). Esta ferramenta é destinada a apoiar pessoas com diabetes, mas não substitui o aconselhamento médico profissional.Aviso: Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.FuncionalidadesCálculo de Dose de Insulina:Calcula a dose de correção com base na glicemia atual e alvo, usando o FSI.
+Calculadora de Insulina
+Uma aplicação web simples e acessível para calcular doses de insulina com base na glicemia atual, hidratos de carbono consumidos, glicemia alvo, fator de sensibilidade à insulina (FSI) e relação insulina/hidratos de carbono (Rácio IC). 
+Esta ferramenta é destinada a apoiar pessoas com diabetes, mas não substitui o aconselhamento médico profissional.Aviso: Esta calculadora é apenas uma ferramenta de suporte. 
+Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.FuncionalidadesCálculo de Dose de Insulina:Calcula a dose de correção com base na glicemia atual e alvo, usando o FSI.
 Calcula a dose para hidratos de carbono com base no Rácio IC.
 Apresenta a dose total arredondada para o meio mais próximo (0,5 unidades).
 
