@@ -5,46 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Insulina</title>
     <style>
-        :root {
-            /* Variáveis para tema claro */
-            --bg-color: #f4f4f4;
-            --calculator-bg: #fff;
-            --text-color: #000;
-            --input-border: #ccc;
-            --button-bg: #28a745;
-            --button-hover: #218838;
-            --reset-bg: #dc3545;
-            --reset-hover: #c82333;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] {
-            /* Variáveis para tema escuro */
-            --bg-color: #222;
-            --calculator-bg: #333;
-            --text-color: #fff;
-            --input-border: #555;
-            --button-bg: #28a745;
-            --button-hover: #218838;
-            --reset-bg: #dc3545;
-            --reset-hover: #c82333;
-            --shadow: rgba(255, 255, 255, 0.1);
-        }
-
         body {
             font-family: Arial, sans-serif;
             max-width: 600px;
             margin: 20px auto;
             padding: 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
+            background-color: #f4f4f4;
+            color: #000;
         }
         .calculator {
-            background: var(--calculator-bg);
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px var(--shadow);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         label {
             display: block;
@@ -54,15 +27,15 @@
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
-            border: 1px solid var(--input-border);
+            border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
-            background-color: var(--calculator-bg);
-            color: var(--text-color);
+            background-color: #fff;
+            color: #000;
         }
         button {
             padding: 10px 20px;
-            background-color: var(--button-bg);
+            background-color: #28a745;
             color: white;
             border: none;
             border-radius: 4px;
@@ -70,13 +43,13 @@
             margin-right: 10px;
         }
         button:hover {
-            background-color: var(--button-hover);
+            background-color: #218838;
         }
-        #reset, #clearSaved, #toggleTheme {
-            background-color: var(--reset-bg);
+        #reset, #clearSaved {
+            background-color: #dc3545;
         }
-        #reset:hover, #clearSaved:hover, #toggleTheme:hover {
-            background-color: var(--reset-hover);
+        #reset:hover, #clearSaved:hover {
+            background-color: #c82333;
         }
         #result {
             margin-top: 20px;
@@ -85,7 +58,7 @@
         .disclaimer {
             margin-top: 20px;
             font-size: 0.9em;
-            color: var(--text-color);
+            color: #000;
             opacity: 0.8;
         }
     </style>
@@ -112,46 +85,21 @@
             <button type="button" onclick="calculateInsulin()">Calcular</button>
             <button type="button" id="reset" onclick="resetForm()">Limpar</button>
             <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
-            <button type="button" id="toggleTheme">Ativar Modo Escuro</button>
         </form>
         <div id="result" aria-live="polite"></div>
         <p class="disclaimer"><strong>Aviso:</strong> Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.</p>
     </div>
 
     <script>
-        // Função para aplicar o tema
-        function applyTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            const toggleButton = document.getElementById('toggleTheme');
-            toggleButton.textContent = theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro';
-            localStorage.setItem('theme', theme);
-            console.log(`Tema aplicado: ${theme}`);
-        }
-
-        // Carregar tema e valores guardados do localStorage ao iniciar
+        // Carregar valores guardados do localStorage ao iniciar
         window.onload = function() {
-            // Carregar tema
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            applyTheme(savedTheme);
-
-            // Carregar valores salvos
             const savedTarget = localStorage.getItem('targetGlucose');
             const savedIsf = localStorage.getItem('insulinSensitivityFactor');
             const savedIcr = localStorage.getItem('insulinCarbRatio');
             if (savedTarget) document.getElementById('target').value = savedTarget;
             if (savedIsf) document.getElementById('isf').value = savedIsf;
             if (savedIcr) document.getElementById('icr').value = savedIcr;
-
-            // Adicionar event listener para o botão de tema
-            document.getElementById('toggleTheme').addEventListener('click', toggleTheme);
         };
-
-        // Função para alternar o tema
-        function toggleTheme() {
-            const currentTheme = document.body.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme(newTheme);
-        }
 
         // Prevenir submissão padrão do formulário
         document.getElementById('insulinForm').addEventListener('submit', function(event) {
