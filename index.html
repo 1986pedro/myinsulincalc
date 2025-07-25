@@ -4,79 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Insulina</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #2563EB;
+            --secondary: #10B981;
+            --danger: #EF4444;
+            --background: #F9FAFB;
+            --text: #111827;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #000;
+            font-family: 'Poppins', sans-serif;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: var(--background);
+            color: var(--text);
         }
+
         .calculator {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+        }
+
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 12px 0 6px;
+            font-weight: 500;
         }
+
         input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
             box-sizing: border-box;
-            background-color: #fff;
-            color: #000;
+            background-color: white;
+            color: var(--text);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
         button {
-            padding: 10px 20px;
-            background-color: #28a745;
+            padding: 12px 24px;
+            background-color: var(--secondary);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
         }
+
         button:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            background-color: #059669;
         }
+
+        button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         #reset, #clearSaved {
-            background-color: #dc3545;
+            background-color: var(--danger);
         }
+
         #reset:hover, #clearSaved:hover {
-            background-color: #c82333;
+            background-color: #DC2626;
         }
+
         #result {
-            margin: 10px 0;
-            font-weight: bold;
+            margin: 1rem 0;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
+
+        #result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .total-dose-value {
-            color: #28a745; /* Verde para o número da dose total */
+            color: var(--secondary);
         }
+
         .total-dose-label {
-            font-size: 18px; /* Aumenta em 2px em relação ao padrão (16px) */
+            font-size: 1.125rem;
         }
+
         #save-message {
             margin: 10px 0;
-            font-size: 0.9em;
-            color: #000;
+            font-size: 0.9rem;
+            color: var(--text);
         }
+
         .disclaimer {
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #000;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text);
             opacity: 0.8;
         }
+
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            input, button {
+                font-size: 0.95rem;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1F2937;
+                color: #F9FAFB;
+            }
+            .calculator {
+                background: #374151;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+            input {
+                background-color: #4B5563;
+                color: #F9FAFB;
+                border-color: #6B7280;
+            }
+            .disclaimer {
+                color: #D1D5DB;
+            }
         }
     </style>
 </head>
@@ -84,6 +176,7 @@
     <div class="calculator">
         <h2>Calculadora de Insulina</h2>
         <form id="insulinForm">
+            <h3>Entrada de Dados</h3>
             <label for="glucose">Glicemia Atual (mg/dL):</label>
             <input type="number" id="glucose" min="0" max="1000" step="1" placeholder="Ex: 150" required>
 
@@ -97,6 +190,7 @@
 
             <div id="result" aria-live="polite"></div>
 
+            <h3>Configurações</h3>
             <label for="target">Glicemia Alvo (mg/dL):</label>
             <input type="number" id="target" min="0" max="300" step="1" placeholder="Ex: 100" required>
 
@@ -108,7 +202,9 @@
 
             <div id="save-message"></div>
 
-            <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
+            <div class="button-group">
+                <button type="button" id="clearSaved" onclick="clearSavedValues()">Eliminar Valores Guardados</button>
+            </div>
         </form>
         <p class="disclaimer"><strong>Aviso:</strong> Esta calculadora é apenas uma ferramenta de suporte. Consulte um profissional de saúde antes de tomar decisões de dosagem de insulina.</p>
     </div>
@@ -122,7 +218,6 @@
             if (savedTarget) document.getElementById('target').value = savedTarget;
             if (savedIsf) document.getElementById('isf').value = savedIsf;
             if (savedIcr) document.getElementById('icr').value = savedIcr;
-            // Exibir mensagem de valores guardados se existirem
             if (savedTarget || savedIsf || savedIcr) {
                 document.getElementById('save-message').innerHTML = 'Valores de alvo, FSI e rácio guardados com sucesso.';
             }
@@ -143,17 +238,20 @@
 
             // Validação de entradas
             if (isNaN(glucose) || isNaN(target) || isNaN(carb) || isNaN(isf) || isNaN(icr)) {
-                document.getElementById('result').innerHTML = 'Por favor, preencha todos os campos com valores válidos.';
+                document.getElementById('result').innerHTML = '<span role="alert">Por favor, preencha todos os campos com valores válidos.</span>';
+                document.getElementById('result').classList.add('show');
                 return;
             }
 
             if (isf === 0 || icr === 0) {
-                document.getElementById('result').innerHTML = 'Fator de sensibilidade ou rácio de hidratos não podem ser zero.';
+                document.getElementById('result').innerHTML = '<span role="alert">Fator de sensibilidade ou rácio de hidratos não podem ser zero.</span>';
+                document.getElementById('result').classList.add('show');
                 return;
             }
 
             if (glucose > 1000 || target > 300 || carb > 500) {
-                document.getElementById('result').innerHTML = 'Valores de glicemia, alvo ou hidratos fora do intervalo realista.';
+                document.getElementById('result').innerHTML = '<span role="alert">Valores de glicemia, alvo ou hidratos fora do intervalo realista.</span>';
+                document.getElementById('result').classList.add('show');
                 return;
             }
 
@@ -192,14 +290,14 @@
                 Dose de hidratos de carbono: ${carbDose.toFixed(2)} unidades<br>
                 ${explanation}
             `;
+            document.getElementById('result').classList.add('show');
         }
 
         function resetForm() {
-            // Apaga apenas os campos que mudam a cada cálculo
             document.getElementById('glucose').value = '';
             document.getElementById('carb').value = '';
             document.getElementById('result').innerHTML = '';
-            // Mantém a mensagem de valores guardados
+            document.getElementById('result').classList.remove('show');
         }
 
         function clearSavedValues() {
@@ -209,8 +307,9 @@
             document.getElementById('target').value = '';
             document.getElementById('isf').value = '';
             document.getElementById('icr').value = '';
-            document.getElementById('result').innerHTML = 'Valores guardados foram eliminados.';
-            document.getElementById('save-message').innerHTML = ''; // Limpa a mensagem de valores guardados
+            document.getElementById('result').innerHTML = '<span role="alert">Valores guardados foram eliminados.</span>';
+            document.getElementById('result').classList.add('show');
+            document.getElementById('save-message').innerHTML = '';
         }
     </script>
 </body>
