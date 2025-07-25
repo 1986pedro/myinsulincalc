@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Insulina</title>
+    <link rel="manifest" href="/myinsulincalc/manifest.json">
+    <meta name="theme-color" content="#2563EB">
     <style>
         :root {
             --primary: #2563EB;
@@ -260,6 +262,15 @@
     </div>
 
     <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/myinsulincalc/sw.js')
+                    .then(reg => console.log('Service Worker registrado:', reg))
+                    .catch(err => console.error('Erro ao registrar Service Worker:', err));
+            });
+        }
+
         // Carregar tema do localStorage
         window.onload = function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
